@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}メモ一覧{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>メモ一覧</h1>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        <a href="{{ path('memo_new') }}" class="btn btn-primary mb-3">新規メモ作成</a>
+
+        <div class="row">
+            {% for memo in memos %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ memo.title }}</h5>
+                            <p class="card-text">
+                                {% if memo.content|length > 50 %}
+                                    {{ memo.content|slice(0, 50) }}...
+                                {% else %}
+                                    {{ memo.content }}
+                                {% endif %}
+                            </p>
+                            <a href="{{ path('memo_show', {'id': memo.id}) }}" class="btn btn-sm btn-primary">詳細</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
