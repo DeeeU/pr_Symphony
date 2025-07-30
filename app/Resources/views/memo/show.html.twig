@@ -8,7 +8,11 @@
 
         <div class="card">
             <div class="card-body">
-                <p>{{ memo.content }}</p>
+                <p>{{ memo.content|nl2br }}</p>
+                <hr>
+                <p class="text-muted small">
+                  作成日: {{ memo.createdAt|date('Y-m-d H-i-s') }}
+                </p>
             </div>
         </div>
 

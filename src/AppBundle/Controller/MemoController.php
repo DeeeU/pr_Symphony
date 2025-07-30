@@ -2,9 +2,10 @@
 
 namespace AppBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+use AppBundle\Entity\Memo;
 
 /**
  * @Route("/memo")
@@ -16,12 +17,8 @@ class MemoController extends Controller
      */
     public function indexAction()
     {
-        // ダミーデータ
-        $memos = [
-            ['id' => 1, 'title' => '最初のメモ', 'content' => 'Symfony学習開始！'],
-            ['id' => 2, 'title' => 'PHP復習', 'content' => 'オブジェクト指向をマスターした'],
-            ['id' => 3, 'title' => '今日の予定', 'content' => 'Symfonyのmvcを理解する'],
-        ];
+        $repository = $this->getDoctrine()->getRepository(Memo::class);
+        $memos = $repository->findAll();
 
         return $this->render('memo/index.html.twig', [
             'memos' => $memos
@@ -39,18 +36,27 @@ class MemoController extends Controller
     /**
      * @Route("/create", name="memo_create", methods={"POST"})
      */
-    public function createAction(Request $request) {
-      $title = $request->request->get('title');
-      $content = $request->request->get('content');
+    public function createAction(Request $request)
+    {
+        $title = $request->request->get('title');
+        $content = $request->request->get('content');
 
-      if(empty($title) || empty($content)) {
-        $this->addFlash('error', 'タイトルを入力して');
-        return $this->redirectToRoute('memo_new');
-      }
+        if (empty($title) || empty($content)) {
+            $this->addFlash('error', 'タイトルと内容は必須です');
+            return $this->redirectToRoute('memo_new');
+        }
 
-      $this->addFlash('success', 'メモ「' . $title . '」を作成しました。');
+        $memo = new Memo();
+        $memo->setTitle($title);
+        $memo->setContent($content);
 
-      return $this->redirectToRoute('memo_index');
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($memo);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'メモ「' . $title . '」を作成しました！');
+
+        return $this->redirectToRoute('memo_index');
     }
 
     /**
@@ -58,12 +64,12 @@ class MemoController extends Controller
      */
     public function showAction($id)
     {
-        // ダミーデータ
-        $memo = [
-            'id' => $id,
-            'title' => 'サンプルメモ' . $id,
-            'content' => 'これはID' . $id . 'のメモの詳細です。長い文章をここに書くことができます。'
-        ];
+        $repository = $this->getDoctrine()->getRepository(Memo::class);
+        $memo = $repository->find($id);
+
+        if (!$memo) {
+            throw $this->createNotFoundException('メモが見つかりません');
+        }
 
         return $this->render('memo/show.html.twig', [
             'memo' => $memo
