@@ -12,24 +12,33 @@
 
         <a href="{{ path('memo_new') }}" class="btn btn-primary mb-3">新規メモ作成</a>
 
-        <div class="row">
-            {% for memo in memos %}
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ memo.title }}</h5>
-                            <p class="card-text">
-                                {% if memo.content|length > 50 %}
-                                    {{ memo.content|slice(0, 50) }}...
-                                {% else %}
-                                    {{ memo.content }}
-                                {% endif %}
-                            </p>
-                            <a href="{{ path('memo_show', {'id': memo.id}) }}" class="btn btn-sm btn-primary">詳細</a>
+        {% if memos|length > 0 %}
+            <div class="row">
+                {% for memo in memos %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ memo.title }}</h5>
+                                <p class="card-text">
+                                    {% if memo.content|length > 50 %}
+                                        {{ memo.content|slice(0, 50) }}...
+                                    {% else %}
+                                        {{ memo.content }}
+                                    {% endif %}
+                                </p>
+                                <p class="text-muted small">
+                                    作成日: {{ memo.createdAt|date('Y-m-d H:i') }}
+                                </p>
+                                <a href="{{ path('memo_show', {'id': memo.id}) }}" class="btn btn-sm btn-primary">詳細</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                まだメモがありません。<a href="{{ path('memo_new') }}">最初のメモを作成</a>してみましょう！
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
