@@ -30,6 +30,7 @@
                                     作成日: {{ memo.createdAt|date('Y-m-d H:i') }}
                                 </p>
                                 <a href="{{ path('memo_show', {'id': memo.id}) }}" class="btn btn-sm btn-primary">詳細</a>
+                                <a href="{{ path('memo_edit', {'id': memo.id}) }}" class="btn btn-sm btn-warning">編集</a>
                             </div>
                         </div>
                     </div>
