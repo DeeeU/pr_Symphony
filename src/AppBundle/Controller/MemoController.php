@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Memo;
+use AppBundle\Form\MemoType;
 
 /**
  * @Route("/memo")
@@ -28,41 +29,56 @@ class MemoController extends Controller
     /**
      * @Route("/new", name="memo_new")
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
-        return $this->render('memo/new.html.twig');
+        $memo = new Memo();
+        $form = $this->createForm(MemoType::class, $memo);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+          $entityManager = $this->getDoctrine()->getManager();
+          $entityManager->persist($memo);
+          $entityManager->flush();
+
+          $this->addFlash('success', 'メモ「' . $memo->getTitle() . '」を作成しました！');
+
+          return $this->redirectToRoute('memo_index');
+        }
+        return $this->render('memo/new.html.twig', [
+          'form' => $form->createView()
+        ]);
     }
 
     /**
      * @Route("/create", name="memo_create", methods={"POST"})
      */
-    public function createAction(Request $request)
-    {
-        $title = $request->request->get('title');
-        $content = $request->request->get('content');
+    // public function createAction(Request $request)
+    // {
+    //     $title = $request->request->get('title');
+    //     $content = $request->request->get('content');
 
-        if (empty($title) || empty($content)) {
-            $this->addFlash('error', 'タイトルと内容は必須です');
-            return $this->redirectToRoute('memo_new');
-        }
+    //     if (empty($title) || empty($content)) {
+    //         $this->addFlash('error', 'タイトルと内容は必須です');
+    //         return $this->redirectToRoute('memo_new');
+    //     }
 
-        $memo = new Memo();
-        $memo->setTitle($title);
-        $memo->setContent($content);
+    //     $memo = new Memo();
+    //     $memo->setTitle($title);
+    //     $memo->setContent($content);
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($memo);
-        $entityManager->flush();
+    //     $entityManager = $this->getDoctrine()->getManager();
+    //     $entityManager->persist($memo);
+    //     $entityManager->flush();
 
-        $this->addFlash('success', 'メモ「' . $title . '」を作成しました！');
+    //     $this->addFlash('success', 'メモ「' . $title . '」を作成しました！');
 
-        return $this->redirectToRoute('memo_index');
-    }
+    //     return $this->redirectToRoute('memo_index');
+    // }
 
     /**
      * @Route("/{id}/edit", name="memo_edit", requirements={"id"="\d+"})
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
         $repository = $this->getDoctrine()->getRepository(Memo::class);
         $memo = $repository->find($id);
@@ -71,41 +87,54 @@ class MemoController extends Controller
             throw $this->createNotFoundException('メモが見つかりません');
         }
 
+        $form = $this->createForm(MemoType::class, $memo);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+          $entityManager = $this->getDoctrine()->getManager();
+          $entityManager->flush();
+
+          $this->addFlash('success', 'メモ「' . $memo->getTitle() . '」を更新しました！');
+
+          return $this->redirectToRoute('memo_show', ['id' => $id]);
+        }
+
         return $this->render('memo/edit.html.twig', [
-            'memo' => $memo
+            'memo' => $memo,
+            'form' => $form->createView()
         ]);
     }
 
     /**
      * @Route("/{id}/update", name="memo_update", methods={"POST"}, requirements={"id"="\d+"})
      */
-    public function updateAction(Request $request, $id)
-    {
-        $repository = $this->getDoctrine()->getRepository(Memo::class);
-        $memo = $repository->find($id);
+    // public function updateAction(Request $request, $id)
+    // {
+    //     $repository = $this->getDoctrine()->getRepository(Memo::class);
+    //     $memo = $repository->find($id);
 
-        if (!$memo) {
-            throw $this->createNotFoundException('メモが見つかりません');
-        }
+    //     if (!$memo) {
+    //         throw $this->createNotFoundException('メモが見つかりません');
+    //     }
 
-        $title = $request->request->get('title');
-        $content = $request->request->get('content');
+    //     $title = $request->request->get('title');
+    //     $content = $request->request->get('content');
 
-        if (empty($title) || empty($content)) {
-            $this->addFlash('error', 'タイトルと内容は必須です');
-            return $this->redirectToRoute('memo_edit', ['id' => $id]);
-        }
+    //     if (empty($title) || empty($content)) {
+    //         $this->addFlash('error', 'タイトルと内容は必須です');
+    //         return $this->redirectToRoute('memo_edit', ['id' => $id]);
+    //     }
 
-        $memo->setTitle($title);
-        $memo->setContent($content);
+    //     $memo->setTitle($title);
+    //     $memo->setContent($content);
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->flush();
+    //     $entityManager = $this->getDoctrine()->getManager();
+    //     $entityManager->flush();
 
-        $this->addFlash('success', 'メモ「' . $title . '」を更新しました！');
+    //     $this->addFlash('success', 'メモ「' . $title . '」を更新しました！');
 
-        return $this->redirectToRoute('memo_show', ['id' => $id]);
-    }
+    //     return $this->redirectToRoute('memo_show', ['id' => $id]);
+    // }
 
     /**
      * @Route("/{id}/delete", name="memo_delete", methods={"POST"}, requirements={"id"="\d+"})
