@@ -44,27 +44,33 @@ class MemoRepository extends \Doctrine\ORM\EntityRepository
   }
 
   public function findByCriteria($keyword = null, $startDate = null, $endDate = null) {
-    $qb = $this->createQueryBuilder('m');
-
-    if (!empty($keyword)) {
-      $qb->andWhere('m.title like :keyword or m.content like :keyword')
-                 ->setParameter('keyword', '%' . $keyword . '%');
-    }
-
-    if ($startDate) {
-      $qb->andWhere('m.createdAt >= :startDate')
-         ->setParameter('startDate', $startDate);
-    }
-
-    if ($endDate) {
-      $qb->andWhere('m.createdAt <= :endDate')
-         ->setParameter('endDate', $endDate);
-    }
-
-    return $qb->orderBy('m.createdAt', 'DESC')
-              ->getQuery()
-              ->getResult();
+    return $this->createQueryBuilder($keyword, $startDate, $endDate)
+                ->getQuery()
+                ->getResult();
   }
+
+  public function createSearchQueryBuilder($keyword = null, $startDate = null, $endDate = null)
+  {
+      $qb = $this->createQueryBuilder('m');
+
+      if (!empty($keyword)) {
+          $qb->andWhere('m.title LIKE :keyword OR m.content LIKE :keyword')
+              ->setParameter('keyword', '%' . $keyword . '%');
+      }
+
+      if ($startDate) {
+          $qb->andWhere('m.createdAt >= :startDate')
+              ->setParameter('startDate', $startDate);
+      }
+
+      if ($endDate) {
+          $qb->andWhere('m.createdAt <= :endDate')
+              ->setParameter('endDate', $endDate);
+      }
+
+      return $qb->orderBy('m.createdAt', 'DESC');
+  }
+
 
   public function findRecent($limit = 10) {
     return $this->createQueryBuilder('m')

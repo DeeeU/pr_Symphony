@@ -45,7 +45,7 @@
 
         {% if keyword or start_date or end_date %}
             <div class="alert alert-info">
-                検索結果: {{ memos|length }} 件
+                検索結果: {{ pagination|length }} 件
                 {% if keyword %}
                     <span class="badge badge-primary">キーワード: {{ keyword }}</span>
                 {% endif %}
@@ -56,11 +56,15 @@
                     <span class="badge badge-secondary">終了日: {{ end_date }}</span>
                 {% endif %}
             </div>
+        {% else %}
+          <div class="alert alert-info">
+            {{ pagination.getTotalItemCount }} 件中 {{ pagination|length }} 件表示
+          </div>
         {% endif %}
 
-        {% if memos|length > 0 %}
+        {% if pagination|length > 0 %}
             <div class="row">
-                {% for memo in memos %}
+                {% for memo in pagination %}
                     <div class="col-md-4 mb-3">
                         <div class="card">
                             <div class="card-body">
@@ -81,6 +85,10 @@
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+
+            <div class="navigation">
+              {{ knp_pagination_render(pagination) }}
             </div>
         {% else %}
             <div class="alert alert-info">
