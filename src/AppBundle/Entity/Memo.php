@@ -48,7 +48,8 @@ class Memo
      */
 
     public function __construct() {
-        $this->createdAt = new \DateTime();
+        $timezone = new \DateTimeZone('Asia/Tokyo');
+        $this->createdAt = new \DateTime('now', $timezone);
     }
 
     public function getId()
