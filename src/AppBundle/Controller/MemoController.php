@@ -42,13 +42,21 @@ class MemoController extends Controller
         }
 
         if ($keyword || $startDateTime || $endDateTime) {
-          $memos = $repository->findByCriteria($keyword, $startDateTime, $endDateTime);
+          $queryBuilder = $repository->createSearchQueryBuilder($keyword, $startDateTime, $endDateTime);
         } else {
-          $memos = $repository->findAll();
+          $queryBuilder = $repository->createQueryBuilder('m')
+                                     ->orderBy('m.createdAt', 'DESC');
         }
 
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+          $queryBuilder,
+          $request->query->getInt('page', 1),
+          5
+        );
+
         return $this->render('memo/index.html.twig', [
-            'memos' => $memos,
+            'pagination' => $pagination,
             'keyword' => $keyword,
             'start_date' => $startDate,
             'end_date' => $endDate,
