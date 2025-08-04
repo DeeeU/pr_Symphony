@@ -16,13 +16,42 @@ class MemoController extends Controller
     /**
      * @Route("/", name="memo_index")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $repository = $this->getDoctrine()->getRepository(Memo::class);
-        $memos = $repository->findAll();
+
+        $keyword = $request->query->get('keyword');
+        $startDate = $request->query->get('start_date');
+        $endDate = $request->query->get('end_date');
+
+        $startDateTime = null;
+        $endDateTime = null;
+
+        if ($startDate) {
+          $startDateTime = \DateTime::createFromFormat('Y-m-d', $startDate);
+          if ($startDateTime) {
+            $startDateTime->setTime(0,0,0);
+          }
+        }
+
+        if ($endDate) {
+          $endDateTime = \DateTime::createFromFormat('Y-m-d', $endDate);
+          if ($endDateTime) {
+            $endDateTime->setTime(23,59,59);
+          }
+        }
+
+        if ($keyword || $startDateTime || $endDateTime) {
+          $memos = $repository->findByCriteria($keyword, $startDateTime, $endDateTime);
+        } else {
+          $memos = $repository->findAll();
+        }
 
         return $this->render('memo/index.html.twig', [
-            'memos' => $memos
+            'memos' => $memos,
+            'keyword' => $keyword,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ]);
     }
 
