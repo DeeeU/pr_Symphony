@@ -10,4 +10,46 @@ namespace AppBundle\Repository;
  */
 class CategoryRepository extends \Doctrine\ORM\EntityRepository
 {
+  public function createSearchQueryBuilder($keyword = null) {
+    $query = $this->createQueryBuilder('c')
+                  ->orderBy('c.createdAt', 'DESC');
+    if ($keyword) {
+      $query->andWhere('c.name like :keyword or c.description like :keyword')
+      ->setParameter('keyword', '%' . $keyword . '%');
+    }
+    return $query;
+  }
+
+  public function findActiveCategories() {
+    return $this->createQueryBuilder('c')
+                ->select('c', 'count(m.id) as memo_count')
+                ->leftJoin('c.memos', 'm')
+                ->groupBy('c.id')
+                ->having('memo_count > 0')
+                ->orderBy('c.name', 'DESC')
+                ->getQuery()
+                ->getResult();
+  }
+
+  public function findByNameExcluding($name, $excludeId = null) {
+    $query = $this->createQueryBuilder('c')
+                  ->where('c.name = :name')
+                  ->setParameter('name', $name);
+    if ($excludeId) {
+      $query->andWhere('c.id != :excludeId')
+            ->setParameter('excludeId', $excludeId);
+    }
+
+    return $query->getQuery()->getOneOrNullResult();
+  }
+
+  public function getCategoriesWithMemoCount() {
+    return $this->createQueryBuilder('c')
+                ->select('c', 'count(m.id) as memo_count')
+                ->leftJoin('c.memos', 'm')
+                ->groupBy('c.id')
+                ->orderBy('c.name', 'ASC')
+                ->getQuery()
+                ->getResult();
+  }
 }

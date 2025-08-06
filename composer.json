@@ -53,6 +53,42 @@
     ],
     "post-update-cmd": [
       "@symfony-scripts"
+    ],
+    "test": [
+      "vendor/bin/phpunit"
+    ],
+    "test-unit": [
+      "vendor/bin/phpunit tests/AppBundle/Entity/"
+    ],
+    "test-repo": [
+      "vendor/bin/phpunit tests/AppBundle/Repository/"
+    ],
+    "test-controller": [
+      "vendor/bin/phpunit tests/AppBundle/Controller/"
+    ],
+    "test-category": [
+      "vendor/bin/phpunit tests/AppBundle/Entity/CategoryTest.php"
+    ],
+    "test-category-repo": [
+      "php -d memory_limit=512M vendor/bin/phpunit tests/AppBundle/Repository/CategoryRepositoryTest.php"
+    ],
+    "test-coverage": [
+      "vendor/bin/phpunit --coverage-text"
+    ],
+    "test-verbose": [
+      "vendor/bin/phpunit --verbose"
+    ],
+    "db-create-test": [
+      "php bin/console doctrine:database:create --env=test"
+    ],
+    "db-update-test": [
+      "php bin/console doctrine:schema:update --force --env=test"
+    ],
+    "db-drop-test": [
+      "php bin/console doctrine:database:drop --force --env=test"
+    ],
+    "cache-clear-test": [
+      "php bin/console cache:clear --env=test"
     ]
   },
   "config": {
