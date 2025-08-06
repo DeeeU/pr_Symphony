@@ -41,17 +41,34 @@ class Memo
      * @ORM\Column(name="createdAt", type="datetime")
      */
     private $createdAt;
+
     /**
-     * Get id
+     * @var Category|null
      *
-     * @return int
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="memos")
+     * @ORM\JoinColumn(nullable=true)
      */
+    private $category;
 
     public function __construct() {
         $timezone = new \DateTimeZone('Asia/Tokyo');
         $this->createdAt = new \DateTime('now', $timezone);
     }
 
+    public function getCategory() {
+      return $this->category;
+    }
+
+    public function setCategory() {
+      $this->category = $category;
+      return $this;
+    }
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
     public function getId()
     {
         return $this->id;
