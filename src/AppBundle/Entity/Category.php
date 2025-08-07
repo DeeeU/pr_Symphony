@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -25,7 +26,8 @@ class Category
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank(message="カテゴリ名は必須です")
+     * @Assert\Length(max=100, maxMessage="カテゴリ名は{{ limit }}文字以内で入力してください")
      * @ORM\Column(name="name", type="string", length=100)
      */
     private $name;
@@ -33,7 +35,9 @@ class Category
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @ORM\Column(name="description", type="string", nullable=true)
+     * @Assert\Length(max=1000, maxMessage="説明は{{ limit }}文字以内で入力してください")
+
      */
     private $description;
 
