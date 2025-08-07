@@ -1,5 +1,5 @@
 imports:
-    - { resource: config_dev.yml }
+  - { resource: '../Resources/config/services_test.yml' }
 
 framework:
     test: ~
@@ -15,8 +15,9 @@ web_profiler:
 swiftmailer:
     disable_delivery: true
 
+
 doctrine:
-  dbal:
-    driver: pdo_sqlite
-    path: "%kernel.cache_dir%/test.db"  # テスト用DB
-    charset: UTF8
+    dbal:
+        driver: pdo_sqlite
+        path: "%kernel.cache_dir%test.db"
+        charset: UTF8
