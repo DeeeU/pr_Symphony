@@ -55,11 +55,11 @@ class Memo
         $this->createdAt = new \DateTime('now', $timezone);
     }
 
-    public function getCategory() {
+    public function getCategory(): ?Category {
       return $this->category;
     }
 
-    public function setCategory() {
+    public function setCategory(?Category $category = null) {
       $this->category = $category;
       return $this;
     }
