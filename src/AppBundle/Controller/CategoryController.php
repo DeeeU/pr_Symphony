@@ -19,7 +19,7 @@ class CategoryController extends Controller
      */
     public function indexAction(Request $request)
     {
-      $repository = $this->getDoctrine() -> getRepository(Category::class);
+      $repository = $this->getDoctrine()->getRepository(Category::class);
 
       $keyword = $request->query->get('keyword');
 
@@ -27,7 +27,7 @@ class CategoryController extends Controller
         $queryBuilder = $repository->createSearchQueryBuilder($keyword);
       } else {
         $queryBuilder = $repository->createQueryBuilder('c')
-                                   ->orderBy('c.createdAt','DESC');
+                                   ->orderBy('c.createdAt', 'DESC');
       }
 
       $paginator = $this->get('knp_paginator');
@@ -44,53 +44,6 @@ class CategoryController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="category_edit")
-     */
-    public function editAction(Request $request, $id)
-    {
-      $repository = $this->getDoctrine()->getRepository(Category::class);
-      $category = $repository->find($id);
-
-      if(!$category) {
-        throw $this->createNotFoundException('カテゴリは見つかりませんでした');
-      }
-
-      $form = $this->editActioncreateForm(CategoryType::class, $category);
-      $form->handleRequest($request);
-
-      if($form->isSubmitted() && $form->isValid()) {
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->flush();
-
-        $this->addFlash('success', 'カテゴリ「' . $category->getName() . '」を更新しました！');
-
-        return $this->redirectToRoute('category_show', ['id' => $id]);
-      }
-
-      return $this->render('category/edit.html.twig', [
-        'category' => $category,
-        'form' => $form->createView()
-      ]);
-    }
-
-    /**
-     * @Route("/{id}", name="category_show")
-     */
-    public function showAction($id)
-    {
-      $repository = $this->getDoctrine()->getRepository(Category::class);
-      $category = $repository->find($id);
-
-      if(!$category) {
-        throw $this->createNotFoundException('カテゴリは見つかりませんでした');
-      }
-
-      return $this->render('category/show.html.twig',[
-        'category' => $category
-      ]);
-    }
-
-    /**
      * @Route("/new", name="category_new")
      */
     public function newAction(Request $request)
@@ -100,11 +53,11 @@ class CategoryController extends Controller
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager = $this->getDoctrine() -> getManager();
+        $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($category);
         $entityManager->flush();
 
-        $this->addFlash('success', 'カテゴリ「' . $category->getName() . '」を作成しました。');
+        $this->addFlash('success', 'カテゴリ「' . $category->getName() . '」を作成しました！');
 
         return $this->redirectToRoute('category_index');
       }
@@ -115,26 +68,73 @@ class CategoryController extends Controller
     }
 
     /**
-     * @Route("/{id}/delete", name="category_delete", methods={"POST"})
+     * @Route("/{id}", name="category_show", requirements={"id"="\d+"})
+     */
+    public function showAction($id)
+    {
+      $repository = $this->getDoctrine()->getRepository(Category::class);
+      $category = $repository->find($id);
+
+      if (!$category) {
+        throw $this->createNotFoundException('カテゴリは見つかりませんでした');
+      }
+
+      return $this->render('category/show.html.twig', [
+        'category' => $category
+      ]);
+    }
+
+    /**
+     * @Route("/{id}/edit", name="category_edit", requirements={"id"="\d+"})
+     */
+    public function editAction(Request $request, $id)
+    {
+      $repository = $this->getDoctrine()->getRepository(Category::class);
+      $category = $repository->find($id);
+
+      if (!$category) {
+          throw $this->createNotFoundException('カテゴリは見つかりませんでした');
+      }
+
+      $form = $this->createForm(CategoryType::class, $category);
+      $form->handleRequest($request);
+
+      if ($form->isSubmitted() && $form->isValid()) {
+          $entityManager = $this->getDoctrine()->getManager();
+          $entityManager->flush();
+
+          $this->addFlash('success', 'カテゴリ「' . $category->getName() . '」を更新しました！');
+
+          return $this->redirectToRoute('category_show', ['id' => $id]);
+      }
+
+      return $this->render('category/:edit.html.twig', [
+          'category' => $category,
+          'form' => $form->createView()
+      ]);
+    }
+
+    /**
+     * @Route("/{id}/delete", name="category_delete", methods={"POST"}, requirements={"id"="\d+"})
      */
     public function deleteAction(Request $request, $id)
     {
       $repository = $this->getDoctrine()->getRepository(Category::class);
       $category = $repository->find($id);
 
-      if(!$category) {
+      if (!$category) {
         throw $this->createNotFoundException('カテゴリは見つかりませんでした');
       }
 
       $token = $request->request->get('_token');
-      if(!$this->isCsrfTokenValid('delete' . $id, $token)) {
-        $this->addFlash('error', '不正なリクエストです');
-        return $this->redirectToRoute('category_show', ['id' => $id]);
+      if (!$this->isCsrfTokenValid('delete' . $id, $token)) {
+          $this->addFlash('error', '不正なリクエストです');
+          return $this->redirectToRoute('category_show', ['id' => $id]);
       }
 
       $name = $category->getName();
 
-      if($category->getMemoCount() > 0) {
+      if ($category->getMemoCount() > 0) {
         $this->addFlash('error', 'カテゴリ「' . $name . '」にはメモが関連付けられているため削除できません');
         return $this->redirectToRoute('category_show', ['id' => $id]);
       }
