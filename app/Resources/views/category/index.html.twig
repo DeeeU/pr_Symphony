@@ -316,12 +316,19 @@
 
           $('.category-card').hover(
             function() {
-              $(this).find('.btn-group button, .button-group a').removeClass('btn-outline-primary btn-outline-warning btn-outline-danger')
-                    .addClass('btn-primary btn-warning btn-danger');
+                var $card = $(this);
+                $card.find('.btn-outline-primary').removeClass('btn-outline-primary').addClass('btn-primary');
+                $card.find('.btn-outline-warning').removeClass('btn-outline-warning').addClass('btn-warning');
+                $card.find('.btn-outline-danger').removeClass('btn-outline-danger').addClass('btn-danger');
+                $card.find('.btn-outline-secondary').removeClass('btn-outline-secondary').addClass('btn-secondary');
             },
             function() {
-              $(this).find('.btn-group .btn').removeClass('btn-outline-primary btn-outline-warning btn-outline-danger')
-                    .addClass('btn-outline-primary btn-outline-warning btn-outline-danger');
+                // ホバー解除時：通常版からoutline版に戻す
+                var $card = $(this);
+                $card.find('.btn-primary').removeClass('btn-primary').addClass('btn-outline-primary');
+                $card.find('.btn-warning').removeClass('btn-warning').addClass('btn-outline-warning');
+                $card.find('.btn-danger').removeClass('btn-danger').addClass('btn-outline-danger');
+                $card.find('.btn-secondary').removeClass('btn-secondary').addClass('btn-outline-secondary');
             }
           );
         });
