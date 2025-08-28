@@ -79,8 +79,13 @@ class CategoryController extends Controller
         throw $this->createNotFoundException('カテゴリは見つかりませんでした');
       }
 
+      $memos = $category->getMemos();
+      $hasMemos = count($memos) > 0;
+
       return $this->render('category/show.html.twig', [
-        'category' => $category
+        'category' => $category,
+        'memos' => $memos,
+        'hasMemos' => $hasMemos
       ]);
     }
 
@@ -147,5 +152,4 @@ class CategoryController extends Controller
 
       return $this->redirectToRoute('category_index');
     }
-
 }
