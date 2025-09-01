@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Memo
@@ -23,14 +24,15 @@ class Memo
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank(message="タイトルは必須です")
+     * @Assert\Length(max=255, maxMessage="タイトルは{{ limit }}文字以内で入力してください")
      * @ORM\Column(name="title", type="string", length=255)
      */
     private $title;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank(message="内容は必須です")
      * @ORM\Column(name="content", type="text")
      */
     private $content;
@@ -127,7 +129,7 @@ class Memo
      *
      * @return Memo
      */
-    public function setCreatedAt($createdAt)  // ← 修正
+    public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -138,7 +140,7 @@ class Memo
      *
      * @return \DateTime
      */
-    public function getCreatedAt()  // ← 修正
+    public function getCreatedAt()
     {
         return $this->createdAt;
     }
