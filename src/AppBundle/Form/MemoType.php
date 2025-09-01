@@ -5,6 +5,8 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use AppBundle\Entity\Category;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -31,6 +33,13 @@ class MemoType extends AbstractType
                     'rows' => 5,
                     'placeholder' => 'メモの内容を入力してください'
                 ]
+            ])
+            ->add('category', EntityType::class, [
+              'class' => Category::class,
+              'choice_label' => 'name',
+              'placeholder' => 'カテゴリを選択してください',
+              'required' => false,
+              'attr' => ['class' => 'form-control']
             ])
             ->add('save', SubmitType::class, [
                 'label' => '保存',

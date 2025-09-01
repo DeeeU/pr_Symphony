@@ -49,7 +49,7 @@ class MemoRepository extends \Doctrine\ORM\EntityRepository
                 ->getResult();
   }
 
-  public function createSearchQueryBuilder($keyword = null, $startDate = null, $endDate = null)
+  public function createSearchQueryBuilder($keyword = null, $startDate = null, $endDate = null, $categoryId = null)
   {
       $qb = $this->createQueryBuilder('m');
 
@@ -66,6 +66,11 @@ class MemoRepository extends \Doctrine\ORM\EntityRepository
       if ($endDate) {
           $qb->andWhere('m.createdAt <= :endDate')
               ->setParameter('endDate', $endDate);
+      }
+
+      if ($categoryId) {
+        $qb->andWhere('m.category = :categoryId')
+           ->setParameter('categoryId', $categoryId);
       }
 
       return $qb->orderBy('m.createdAt', 'DESC');
