@@ -58,4 +58,24 @@ class CategoryTest extends TestCase
 
         $this->assertEquals($color, $category->getColor());
     }
+
+    public function testGetColorPresets() {
+      $presets = Category::getColorPresets();
+
+      $this->assertIsArray($presets);
+      $this->assertArrayHasKey('#007bff', $presets);
+      $this->assertEquals('青', $presets['#007bff']);
+    }
+
+    public function testGetColorName() {
+      $category = new Category();
+
+      $category->setColor('#007bff');
+      $this->assertEquals('青', $category->getColorName());
+
+      $customized_color_category = new Category();
+
+      $customized_color_category->setColor('#002bee');
+      $this->assertEquals('カスタム', $customized_color_category->getColorName());
+    }
 }

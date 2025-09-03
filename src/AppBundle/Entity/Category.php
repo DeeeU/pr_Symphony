@@ -211,4 +211,25 @@ class Category
     public function __toString(): string {
       return $this->name ?? '';
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getColorPresets(): array {
+      return [
+        '#007bff' => '青',
+        '#28a745' => '緑',
+        '#dc3545' => '赤',
+        '#ffc107' => '黄',
+        '#6f42c1' => '紫',
+        '#fd7e14' => 'オレンジ',
+        '#20c997' => 'ティール',
+        '#6c757d' => 'グレー'
+      ];
+    }
+
+    public function getColorName() {
+      $presets = self::getColorPresets();
+      return $presets[$this->color] ?? 'カスタム';
+    }
 }
