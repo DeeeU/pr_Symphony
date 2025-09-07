@@ -44,6 +44,8 @@ class Memo
      */
     private $createdAt;
 
+
+    ## カテゴリーの紐付け
     /**
      * @var Category|null
      *
@@ -63,6 +65,39 @@ class Memo
 
     public function setCategory(?Category $category = null) {
       $this->category = $category;
+      return $this;
+    }
+
+    ## Userの紐付け
+
+    /**
+     * @var User|null
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="memos")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $author;
+
+    /**
+     * get author
+     *
+     * @return User|null
+     */
+    public function getAuthor(): ?User
+    {
+      return $this->author;
+    }
+
+    /**
+     * set author
+     *
+     * @param User|null $author
+     *
+     * @return Memo
+     */
+    public function setAuthor(?User $author = null): self
+    {
+      $this->author = $author;
       return $this;
     }
 

@@ -3,6 +3,8 @@
 namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use AppBundle\Entity\User;
+
 
 /**
  * MemoRepository
@@ -44,12 +46,12 @@ class MemoRepository extends \Doctrine\ORM\EntityRepository
   }
 
   public function findByCriteria($keyword = null, $startDate = null, $endDate = null) {
-    return $this->createQueryBuilder($keyword, $startDate, $endDate)
+    return $this->createSearchQueryBuilder($keyword, $startDate, $endDate)
                 ->getQuery()
                 ->getResult();
   }
 
-  public function createSearchQueryBuilder($keyword = null, $startDate = null, $endDate = null, $categoryId = null)
+  public function createSearchQueryBuilder($keyword = null, $startDate = null, $endDate = null, $categoryId = null, $authorId = null)
   {
       $qb = $this->createQueryBuilder('m');
 
@@ -73,6 +75,11 @@ class MemoRepository extends \Doctrine\ORM\EntityRepository
            ->setParameter('categoryId', $categoryId);
       }
 
+      if ($authorId) {
+        $qb->andWhere('m.author = :authorId')
+           ->setParameter('authorId', $authorId);
+      }
+
       return $qb->orderBy('m.createdAt', 'DESC');
   }
 
@@ -81,6 +88,22 @@ class MemoRepository extends \Doctrine\ORM\EntityRepository
     return $this->createQueryBuilder('m')
                 ->orderBy('m.createdAt', 'DESC')
                 ->setMaxResults($limit)
+                ->getQuery()
+                ->getResult();
+  }
+
+  /**
+   *
+   * @param User $user
+   * @return array
+   *
+   */
+  public function findByAuthor(User $user)
+  {
+    return $this->createQueryBuilder('m')
+                ->where('m.author = :author')
+                ->setParameter('author', $user)
+                ->orderBy('m.createdAt' ,'DESC')
                 ->getQuery()
                 ->getResult();
   }
