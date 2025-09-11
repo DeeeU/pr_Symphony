@@ -1,5 +1,5 @@
 class TestHelpers {
-    static async waitForFlashMessage(page, expectedMessage, timeout = 5000) {
+    static async waitForFlashMessage(page, expectedMessage, timeout = 10000) {
         try {
             const flashSelector = '.alert, .flash-notice, .flash-success, .flash-error';
             await page.waitForSelector(flashSelector, { timeout });

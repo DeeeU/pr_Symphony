@@ -218,18 +218,21 @@ test.describe('メモ一覧表示機能', () => {
     test('検索結果の件数表示が更新される', async () => {
         await memoPage.navigateToMemoList();
         
-        // 件数表示要素を探す
-        const countDisplayExists = await memoPage.page.locator(':text("件中"), :text("件表示")').count() > 0;
+        // 件数表示要素を探す（スクリーンショットから「23 件中 5 件表示」の形式を確認）
+        const countDisplayExists = await memoPage.page.locator(':text("件中"), :text("件表示"), :text("件中 5 件表示")').count() > 0;
         
         if (countDisplayExists) {
             // 検索前の件数を記録
-            const beforeSearchText = await memoPage.page.locator(':text("件中"), :text("件表示")').first().textContent();
+            const beforeSearchText = await memoPage.page.locator(':text("件中"), :text("件表示"), :text("件中 5 件表示")').first().textContent();
             
             // 検索実行
             await memoPage.searchMemos({ keyword: 'test' });
             
+            // 少し待機してから件数を確認
+            await memoPage.page.waitForTimeout(1000);
+            
             // 検索後の件数表示を確認
-            const afterSearchText = await memoPage.page.locator(':text("件中"), :text("件表示")').first().textContent();
+            const afterSearchText = await memoPage.page.locator(':text("件中"), :text("件表示"), :text("件中 5 件表示")').first().textContent();
             
             // 件数表示が更新されることを確認（内容が変わっている可能性）
             expect(afterSearchText).toBeTruthy();

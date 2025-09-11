@@ -20,7 +20,7 @@ class MemoPage extends BasePage {
             searchButton: 'button:has-text("検索")',
             clearButton: 'a:has-text("クリア")',
             newMemoButton: 'a:has-text("新規メモ作成")',
-            memoItems: '.memo-item, [class*="memo"]',
+            memoItems: 'h5:contains("テストメモ"), .memo-row, tr:has(h5)',
             memoTitle: 'h5, .memo-title',
             detailLink: 'a:has-text("詳細")',
             editLink: 'a:has-text("編集")',
