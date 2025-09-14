@@ -16,7 +16,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
    * @return User|null
    */
   public function findByEmail($email) {
-    return $this->createQueryResult('u')
+    return $this->createQueryBuilder('u')
                 ->where('u.email = :email')
                 ->setParameter('email', $email)
                 ->getQuery()
@@ -29,7 +29,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
    */
   public function createSearchQueryBuilder($keyword = null) {
     $query = $this -> createQueryBuilder('u')
-                   -> orderBy('u.createdAt', DESC);
+                   -> orderBy('u.createdAt', 'DESC');
     if ($keyword) {
       $query->andWhere('u.name like :keyword or u.email like :keyword')
             ->setParameter('keyword', '%' . $keyword . '%');
