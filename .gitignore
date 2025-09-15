@@ -1,3 +1,5 @@
+# Symfony Framework
+###################
 /.web-server-pid
 /app/config/parameters.yml
 /build/
@@ -15,3 +17,88 @@
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
+
+# Node.js & NPM
+###############
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+.npm
+.yarn-integrity
+
+# Playwright & E2E Testing
+##########################
+/test-results/
+/playwright-report/
+/tests/e2e/reports/
+/tests/e2e/screenshots/
+/ms-playwright/
+coverage/
+*.lcov
+.nyc_output
+
+# Environment Variables
+#######################
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE & Editor
+##############
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating System
+##################
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Logs & Temporary Files
+########################
+*.log
+logs/
+pids/
+*.pid
+*.seed
+*.pid.lock
+tmp/
+temp/
+
+# Database Files
+################
+*.sqlite
+*.db

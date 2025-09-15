@@ -1,0 +1,34 @@
+{
+  "name": "symfony-memo-app-e2e-tests",
+  "version": "1.0.0",
+  "description": "E2E tests for Symfony memo application using Playwright MCP",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:memo": "playwright test tests/e2e/MemoManagement/",
+    "test:category": "playwright test tests/e2e/CategoryManagement/",
+    "test:create-memo": "playwright test tests/e2e/MemoManagement/CreateMemo.spec.js",
+    "test:list-memo": "playwright test tests/e2e/MemoManagement/ListMemos.spec.js",
+    "test:create-category": "playwright test tests/e2e/CategoryManagement/CreateCategory.spec.js",
+    "report": "playwright show-report tests/e2e/reports",
+    "install-browsers": "playwright install"
+  },
+  "keywords": [
+    "playwright",
+    "e2e",
+    "testing",
+    "symfony",
+    "mcp"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
