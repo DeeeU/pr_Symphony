@@ -22,6 +22,11 @@
           {{ form_widget(form.category)}}
           {{ form_errors(form.category)}}
         </div>
+        <div class="form-group mb-3">
+          {{ form_label(form.author)}}
+          {{ form_widget(form.author)}}
+          {{ form_errors(form.author)}}
+        </div>
         {{ form_widget(form.save) }}
         <a href="{{ path('memo_index') }}" class="btn btn-secondary">キャンセル</a>
       {{ form_end(form) }}
