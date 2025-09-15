@@ -5,7 +5,9 @@ namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Entity\Memo;
+use AppBundle\Entity\Category;
 use AppBundle\Form\MemoType;
 
 /**
@@ -28,31 +30,31 @@ class MemoController extends Controller
         $endDateTime = null;
 
         if ($startDate) {
-          $startDateTime = \DateTime::createFromFormat('Y-m-d', $startDate);
-          if ($startDateTime) {
-            $startDateTime->setTime(0,0,0);
-          }
+            $startDateTime = \DateTime::createFromFormat('Y-m-d', $startDate);
+            if ($startDateTime) {
+                $startDateTime->setTime(0, 0, 0);
+            }
         }
 
         if ($endDate) {
-          $endDateTime = \DateTime::createFromFormat('Y-m-d', $endDate);
-          if ($endDateTime) {
-            $endDateTime->setTime(23,59,59);
-          }
+            $endDateTime = \DateTime::createFromFormat('Y-m-d', $endDate);
+            if ($endDateTime) {
+                $endDateTime->setTime(23, 59, 59);
+            }
         }
 
         if ($keyword || $startDateTime || $endDateTime) {
-          $queryBuilder = $repository->createSearchQueryBuilder($keyword, $startDateTime, $endDateTime);
+            $queryBuilder = $repository->createSearchQueryBuilder($keyword, $startDateTime, $endDateTime);
         } else {
-          $queryBuilder = $repository->createQueryBuilder('m')
-                                     ->orderBy('m.createdAt', 'DESC');
+            $queryBuilder = $repository->createQueryBuilder('m')
+                                       ->orderBy('m.createdAt', 'DESC');
         }
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-          $queryBuilder,
-          $request->query->getInt('page', 1),
-          5
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            5
         );
 
         return $this->render('memo/index.html.twig', [
@@ -73,44 +75,19 @@ class MemoController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-          $entityManager = $this->getDoctrine()->getManager();
-          $entityManager->persist($memo);
-          $entityManager->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($memo);
+            $entityManager->flush();
 
-          $this->addFlash('success', 'メモ「' . $memo->getTitle() . '」を作成しました！');
+            $this->addFlash('success', 'メモ「' . $memo->getTitle() . '」を作成しました！');
 
-          return $this->redirectToRoute('memo_index');
+            return $this->redirectToRoute('memo_index');
         }
         return $this->render('memo/new.html.twig', [
-          'form' => $form->createView()
+            'form' => $form->createView()
         ]);
     }
 
-    /**
-     * @Route("/create", name="memo_create", methods={"POST"})
-     */
-    // public function createAction(Request $request)
-    // {
-    //     $title = $request->request->get('title');
-    //     $content = $request->request->get('content');
-
-    //     if (empty($title) || empty($content)) {
-    //         $this->addFlash('error', 'タイトルと内容は必須です');
-    //         return $this->redirectToRoute('memo_new');
-    //     }
-
-    //     $memo = new Memo();
-    //     $memo->setTitle($title);
-    //     $memo->setContent($content);
-
-    //     $entityManager = $this->getDoctrine()->getManager();
-    //     $entityManager->persist($memo);
-    //     $entityManager->flush();
-
-    //     $this->addFlash('success', 'メモ「' . $title . '」を作成しました！');
-
-    //     return $this->redirectToRoute('memo_index');
-    // }
 
     /**
      * @Route("/{id}/edit", name="memo_edit", requirements={"id"="\d+"})
@@ -128,12 +105,12 @@ class MemoController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-          $entityManager = $this->getDoctrine()->getManager();
-          $entityManager->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
 
-          $this->addFlash('success', 'メモ「' . $memo->getTitle() . '」を更新しました！');
+            $this->addFlash('success', 'メモ「' . $memo->getTitle() . '」を更新しました！');
 
-          return $this->redirectToRoute('memo_show', ['id' => $id]);
+            return $this->redirectToRoute('memo_show', ['id' => $id]);
         }
 
         return $this->render('memo/edit.html.twig', [
@@ -142,36 +119,6 @@ class MemoController extends Controller
         ]);
     }
 
-    /**
-     * @Route("/{id}/update", name="memo_update", methods={"POST"}, requirements={"id"="\d+"})
-     */
-    // public function updateAction(Request $request, $id)
-    // {
-    //     $repository = $this->getDoctrine()->getRepository(Memo::class);
-    //     $memo = $repository->find($id);
-
-    //     if (!$memo) {
-    //         throw $this->createNotFoundException('メモが見つかりません');
-    //     }
-
-    //     $title = $request->request->get('title');
-    //     $content = $request->request->get('content');
-
-    //     if (empty($title) || empty($content)) {
-    //         $this->addFlash('error', 'タイトルと内容は必須です');
-    //         return $this->redirectToRoute('memo_edit', ['id' => $id]);
-    //     }
-
-    //     $memo->setTitle($title);
-    //     $memo->setContent($content);
-
-    //     $entityManager = $this->getDoctrine()->getManager();
-    //     $entityManager->flush();
-
-    //     $this->addFlash('success', 'メモ「' . $title . '」を更新しました！');
-
-    //     return $this->redirectToRoute('memo_show', ['id' => $id]);
-    // }
 
     /**
      * @Route("/{id}/delete", name="memo_delete", methods={"POST"}, requirements={"id"="\d+"})
@@ -218,4 +165,30 @@ class MemoController extends Controller
             'memo' => $memo
         ]);
     }
+
+    /**
+     * @Route("/ajax/categories", name="memo_ajax_categories")
+     */
+    public function ajaxCategoriesAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Category::class);
+        $categories = $repository->findAll();
+
+        $categoryData = [];
+        foreach ($categories as $category) {
+            $categoryData[] = [
+                'id' => $category->getId(),
+                'name' => $category->getName(),
+                'description' => $category->getDescription(),
+                'color' => $category->getColor(),
+                'memo_count' => $category->getMemoCounter()
+            ];
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => $categoryData
+        ]);
+    }
+
 }
