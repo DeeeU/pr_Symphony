@@ -181,14 +181,17 @@ class MemoController extends Controller
                 'name' => $category->getName(),
                 'description' => $category->getDescription(),
                 'color' => $category->getColor(),
-                'memo_count' => $category->getMemoCounter()
+                'memo_count' => $category->getMemoCount()
             ];
         }
 
-        return new JsonResponse([
+        $response = new JsonResponse([
             'success' => true,
             'message' => $categoryData
         ]);
+        $response->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+
+        return $response;
     }
 
 }
