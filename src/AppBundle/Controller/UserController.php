@@ -26,7 +26,7 @@ class UserController extends Controller
                 'id' => $user->getId(),
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
-                'memo_count' => count($user->getMemo())
+                'memo_count' => count($user->getMemos())
             ];
         }
 
