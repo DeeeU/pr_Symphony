@@ -43,10 +43,9 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
    */
   public function findUsersWithMemos() {
     return $this->createQueryBuilder('u')
-                ->select('u', 'count(m.id as memo_count')
                 ->leftJoin('u.memos', 'm')
                 ->groupBy('u.id')
-                ->having('memo_count > 0')
+                ->having('COUNT(m.id) > 0')
                 ->orderBy('u.name', 'ASC')
                 ->getQuery()
                 ->getResult();
