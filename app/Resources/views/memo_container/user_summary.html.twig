@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ container.name }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- パンくずリスト -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('homepage') }}">ホーム</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('memo_container_index') }}">メモコンテナ</a></li>
+                    <li class="breadcrumb-item active">{{ user.name }}さんのまとめ</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2><i class="fas fa-box"></i> {{ container.name }}</h2>
+                        <small>{{ container.createdAt|date('Y/m/d H:i') }}</small>
+                    </div>
+                    <p class="mb-0">{{ container.description }}</p>
+                </div>
+
+                <div class="card-body">
+                    <!-- コンテナ統計情報 -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <h5><i class="fas fa-chart-bar"></i> 統計情報</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li><strong>総メモ数:</strong> {{ container.memoCount }}件</li>
+                                    <li><strong>作成者:</strong> {{ container.user.name }}</li>
+                                    <li><strong>メールアドレス:</strong> {{ container.user.email }}</li>
+                                    {% if container.isEmpty %}
+                                        <li><span class="badge badge-warning">メモなし</span></li>
+                                    {% else %}
+                                        <li><span class="badge badge-success">メモあり</span></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <!-- カテゴリ別統計 -->
+                            <div class="bg-light p-3 rounded">
+                                <h5><i class="fas fa-tags"></i> カテゴリ別分析</h5>
+                                {% set categories = {} %}
+                                {% set uncategorized = 0 %}
+
+                                {% for memo in container.memos %}
+                                    {% if memo.category %}
+                                        {% set categoryName = memo.category.name %}
+                                        {% set categories = categories|merge({(categoryName): (categories[categoryName]|default(0) + 1)}) %}
+                                    {% else %}
+                                        {% set uncategorized = uncategorized + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                <div class="mb-2">
+                                    {% for categoryName, count in categories %}
+                                        <span class="badge badge-secondary mr-2 mb-1">
+                                            {{ categoryName }}: {{ count }}件
+                                        </span>
+                                    {% endfor %}
+
+                                    {% if uncategorized > 0 %}
+                                        <span class="badge badge-light mr-2 mb-1">
+                                            未分類: {{ uncategorized }}件
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                {% if categories|length == 0 and uncategorized == 0 %}
+                                    <p class="text-muted mb-0">カテゴリ情報がありません</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- メモ一覧 -->
+                    <h4><i class="fas fa-list"></i> 収録メモ一覧</h4>
+                    <hr>
+
+                    {% if container.isEmpty %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> このユーザーはまだメモを作成していません。
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            {% for memo in container.memos %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title mb-0">{{ memo.title }}</h6>
+                                                {% if memo.category %}
+                                                    <span class="badge badge-primary">{{ memo.category.name }}</span>
+                                                {% else %}
+                                                    <span class="badge badge-light">未分類</span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="card-text">
+                                                {{ memo.content|length > 100 ? memo.content|slice(0, 100) ~ '...' : memo.content }}
+                                            </p>
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock"></i> {{ memo.createdAt|date('Y/m/d H:i') }}
+                                            </small>
+                                        </div>
+                                        <div class="card-footer bg-transparent">
+                                            <small class="text-muted">
+                                                文字数: {{ memo.content|length }}文字
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
