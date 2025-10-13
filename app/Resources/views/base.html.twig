@@ -6,9 +6,45 @@
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+        <style>
+            .navbar-brand {
+                font-weight: bold;
+                font-size: 1.3rem;
+            }
+            .nav-link.active {
+                font-weight: bold;
+                border-bottom: 3px solid #fff;
+            }
+        </style>
     </head>
     <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ path('homepage') }}">📝 Memo App</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('memo_index') }}">📄 メモ一覧</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('timeline_index') }}">🕐 タイムライン</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('category_index') }}">🏷️ カテゴリ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('memo_new') }}">➕ 新規作成</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
         {% block body %}{% endblock %}
+
         {% block javascripts %}
           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
           <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
