@@ -4,6 +4,8 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * Memo
@@ -58,6 +60,7 @@ class Memo
   {
     $timezone = new \DateTimeZone('Asia/Tokyo');
     $this->createdAt = new \DateTime('now', $timezone);
+    $this->tags = new ArrayCollection();
   }
 
   public function getCategory(): ?Category
@@ -80,6 +83,16 @@ class Memo
    * @ORM\JoinColumn(nullable=true)
    */
   private $author;
+
+  /**
+   * @var Collection|Tag[]
+   * @ORM\ManyToMany(targetEntity="Tag", inversedBy="memos")
+   * @ORM\JoinTable(name="memo_tag",
+   *   joinColumns={@ORM\JoinColumn(name="memo_id", referencedColumnName="id")},
+   *   inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
+   * )
+   */
+  private $tags;
 
   /**
    * get author
@@ -181,5 +194,41 @@ class Memo
   public function getCreatedAt()
   {
     return $this->createdAt;
+  }
+
+  /**
+   * Get tags
+   *
+   * @return Collection|Tag[]
+   */
+  public function getTags(): Collection
+  {
+    return $this->tags;
+  }
+
+  /**
+   * Add tag
+   *
+   * @param Tag $tag
+   * @return Memo
+   */
+  public function addTag(Tag $tag): self
+  {
+    if (!$this->tags->contains($tag)) {
+      $this->tags[] = $tag;
+    }
+    return $this;
+  }
+
+  /**
+   * Remove tag
+   *
+   * @param Tag $tag
+   * @return Memo
+   */
+  public function removeTag(Tag $tag): self
+  {
+    $this->tags->removeElement($tag);
+    return $this;
   }
 }
