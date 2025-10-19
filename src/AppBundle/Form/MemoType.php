@@ -43,21 +43,24 @@ class MemoType extends AbstractType
         'required' => false,
         'attr' => ['class' => 'form-control']
       ])
-      ->add('author', EntityType::class, [
-        'class' => User::class,
-        'choice_label' => 'name',
-        'placeholder' => '-- 作成者を選択してください --',
-        'required' => false,
-        'label' => '作成者',
-        'attr' => ['class' => 'form-control']
-      ])
       ->add('tags', EntityType::class, [
         'class' => Tag::class,
         'choice_label' => 'name',
         'multiple' => true,
         'expanded' => false,
         'required' => false,
-        'label' => 'タグ',
+        'label' => 'タグ（Ctrl/Cmdを押しながら複数選択可）',
+        'attr' => [
+          'class' => 'form-control',
+          'size' => 5
+        ]
+      ])
+      ->add('author', EntityType::class, [
+        'class' => User::class,
+        'choice_label' => 'name',
+        'placeholder' => '-- 作成者を選択してください --',
+        'required' => false,
+        'label' => '作成者',
         'attr' => ['class' => 'form-control']
       ])
       ->add('save', SubmitType::class, [

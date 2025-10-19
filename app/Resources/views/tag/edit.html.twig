@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}タグ編集{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>✏️ タグ編集</h1>
+
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form) }}
+                {{ form_row(form.name) }}
+                {{ form_row(form.color) }}
+
+                <div class="mt-3">
+                    {{ form_row(form.save) }}
+                    <a href="{{ path('tag_index') }}" class="btn btn-secondary">キャンセル</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <div class="alert alert-info mt-3">
+        📊 このタグは {{ tag.memoCount }} 件のメモで使用されています
+    </div>
+</div>
+{% endblock %}

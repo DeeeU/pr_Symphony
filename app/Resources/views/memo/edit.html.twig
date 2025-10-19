@@ -23,6 +23,17 @@
                 {{ form_widget(form.category) }}
                 {{ form_errors(form.category) }}
             </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.tags) }}
+                {{ form_widget(form.tags) }}
+                {{ form_errors(form.tags) }}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.author) }}
+                {{ form_widget(form.author) }}
+                {{ form_errors(form.author) }}
+            </div>
+
             {{ form_widget(form.save, {'label': '更新'}) }}
             <a href="{{ path('memo_show', {'id': memo.id}) }}" class="btn btn-secondary">キャンセル</a>
         {{ form_end(form) }}
