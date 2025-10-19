@@ -83,43 +83,20 @@
                 {{ form_widget(form.content)}}
                 {{ form_errors(form.content)}}
             </div>
-
-            <!-- カテゴリ選択（モーダル付き） -->
             <div class="form-group mb-3">
-                <label>カテゴリ</label>
-                <div class="d-flex">
-                    <select id="category-select" name="{{ form.category.vars.full_name }}" class="form-control" >
-                        <option value="">-- カテゴリを選択してください --</option>
-                    </select>
-                    <button type="button" class="btn btn-outline-primary ml-2" data-toggle="modal" data-target="#categoryModal">
-                        📁 選択
-                    </button>
-                </div>
-                <div id="selected-category-preview" class="mt-2" style="display:none;">
-                    <!-- 選択されたカテゴリのプレビュー -->
-                </div>
-            </div>
-
-            <!-- 作成者選択（モーダル付き） -->
-            <div class="form-group mb-3">
-                <label>作成者</label>
-                <div class="d-flex">
-                    <select id="author-select" name="{{ form.author.vars.full_name }}" class="form-control" >
-                        <option value="">-- 作成者を選択してください --</option>
-                    </select>
-                    <button type="button" class="btn btn-outline-success ml-2" data-toggle="modal" data-target="#authorModal">
-                        👤 選択
-                    </button>
-                </div>
-                <div id="selected-author-preview" class="mt-2" style="display:none;">
-                    <!-- 選択されたユーザーのプレビュー -->
-                </div>
-            </div>
-
-            <!-- 元のフォームフィールドを非表示にする -->
-            <div style="display: none;">
+                {{ form_label(form.category) }}
                 {{ form_widget(form.category) }}
+                {{ form_errors(form.category) }}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.tags) }}
+                {{ form_widget(form.tags) }}
+                {{ form_errors(form.tags) }}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.author) }}
                 {{ form_widget(form.author) }}
+                {{ form_errors(form.author) }}
             </div>
 
             {{ form_widget(form.save) }}
