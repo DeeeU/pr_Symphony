@@ -40,6 +40,9 @@ php bin/console doctrine:database:create
 php bin/console doctrine:schema:update --force
 php bin/console doctrine:migrations:migrate
 
+# User role management
+php bin/console app:user:role   # Manage admin roles (grant/revoke)
+
 # Development server
 php bin/console server:run
 ```
@@ -51,7 +54,7 @@ This is a Symfony 3.4 memo management application with the following structure:
 ### Core Entities
 - **Category** (`src/AppBundle/Entity/Category.php`): Categories for organizing memos
 - **Memo** (`src/AppBundle/Entity/Memo.php`): Individual memo entries
-- **User** (`src/AppBundle/Entity/User.php`): User management
+- **User** (`src/AppBundle/Entity/User.php`): User management with role-based access control
 - **MemoContainer** (`src/AppBundle/Entity/MemoContainer.php`): Container for memo aggregation
 
 ### Entity Relationships
@@ -122,6 +125,29 @@ Templates are in `app/Resources/views/`:
 - CSRF protection on forms
 - Symfony Security component integration
 - Input validation on all forms
+- Role-based access control (RBAC)
+
+### User Role Management
+The User entity supports role-based permissions:
+- **ROLE_MEMBER**: Default role for all users
+- **ROLE_ADMIN**: Administrator role with elevated privileges
+
+**IMPORTANT SECURITY RULES:**
+1. **NEVER** include the `roles` field in user registration/edit forms
+2. Admin privileges can **ONLY** be granted via CLI command: `php bin/console app:user:role`
+3. When creating UserType form, **DO NOT** add a `roles` field
+4. Admin role is for future admin panel access and memo management permissions
+
+**Managing Admin Users:**
+```bash
+# Interactive command to manage admin roles
+php bin/console app:user:role
+
+# Options:
+# 1. Grant admin role to a user
+# 2. Revoke admin role from a user
+# 3. List all admin users
+```
 
 When making changes:
 1. Always run tests after modifications: `composer test`

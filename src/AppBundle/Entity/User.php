@@ -52,6 +52,13 @@ class User
     private $createdAt;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="roles", type="json")
+     */
+    private $roles;
+
+    /**
      * @var Collection|Memo[]
      * @ORM\oneToMany(targetEntity="Memo", mappedBy="author")
      */
@@ -62,6 +69,7 @@ class User
       $this->memos = new ArrayCollection();
       $timezone = new \DateTimeZone('Asia/Tokyo');
       $this->createdAt = new \DateTime('now', $timezone);
+      $this->roles = ['ROLE_MEMBER'];
     }
 
     /**
@@ -193,5 +201,90 @@ class User
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Get roles.
+     *
+     * @return array
+     */
+    public function getRoles()
+    {
+        $roles = $this->roles;
+        // ユーザーは最低でも1つのロールを持つ必要がある
+        if (empty($roles)) {
+            $roles[] = 'ROLE_MEMBER';
+        }
+        return array_unique($roles);
+    }
+
+    /**
+     * Set roles.
+     *
+     * @param array $roles
+     *
+     * @return User
+     */
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Add role.
+     *
+     * @param string $role
+     *
+     * @return User
+     */
+    public function addRole($role)
+    {
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove role.
+     *
+     * @param string $role
+     *
+     * @return User
+     */
+    public function removeRole($role)
+    {
+        $key = array_search($role, $this->roles, true);
+        if ($key !== false) {
+            unset($this->roles[$key]);
+            $this->roles = array_values($this->roles);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Check if user has a specific role.
+     *
+     * @param string $role
+     *
+     * @return bool
+     */
+    public function hasRole($role)
+    {
+        return in_array($role, $this->getRoles(), true);
+    }
+
+    /**
+     * Check if user is an admin.
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->hasRole('ROLE_ADMIN');
     }
 }
