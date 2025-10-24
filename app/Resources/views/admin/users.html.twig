@@ -1,0 +1,245 @@
+{% extends 'base.html.twig' %}
+{% block title %}ユーザー管理 - 管理画面{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .user-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .user-row:hover {
+            background-color: #f8f9fa;
+        }
+        .admin-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .action-buttons .btn {
+            margin: 0 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4">
+        <!-- 管理画面ヘッダー -->
+        <div class="admin-header">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-2">ユーザー管理</h1>
+                        <p class="mb-0">登録ユーザーの管理と権限設定</p>
+                    </div>
+                    <a href="{{ path('admin_dashboard') }}" class="btn btn-light">
+                        ダッシュボードに戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- フラッシュメッセージ -->
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+
+            <!-- ユーザー情報 -->
+            <div class="alert alert-light border mb-4">
+                総ユーザー数: <strong>{{ pagination.getTotalItemCount }}</strong>
+            </div>
+
+            <!-- ユーザーテーブル -->
+            {% if pagination|length > 0 %}
+                <div class="user-table mb-4">
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>名前</th>
+                                <th>メールアドレス</th>
+                                <th>権限</th>
+                                <th>メモ数</th>
+                                <th>登録日時</th>
+                                <th class="text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in pagination %}
+                                <tr class="user-row">
+                                    <td>{{ user.id }}</td>
+                                    <td>
+                                        <strong>{{ user.name }}</strong>
+                                    </td>
+                                    <td>
+                                        <small>{{ user.email }}</small>
+                                    </td>
+                                    <td>
+                                        {% if user.isAdmin %}
+                                            <span class="badge badge-danger admin-badge">管理者</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary admin-badge">一般</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">{{ user.memos|length }}</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ user.createdAt|date('Y/m/d H:i') }}
+                                        </small>
+                                    </td>
+                                    <td class="text-center action-buttons">
+                                        <!-- 権限切り替えボタン -->
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-warning"
+                                                data-toggle="modal"
+                                                data-target="#toggleAdminModal{{ user.id }}">
+                                            {% if user.isAdmin %}
+                                                権限解除
+                                            {% else %}
+                                                管理者化
+                                            {% endif %}
+                                        </button>
+
+                                        <!-- 削除ボタン -->
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-toggle="modal"
+                                                data-target="#deleteModal{{ user.id }}">
+                                            削除
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- 権限切り替え確認モーダル -->
+                                <div class="modal fade" id="toggleAdminModal{{ user.id }}" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-warning text-dark">
+                                                <h5 class="modal-title">権限変更確認</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>
+                                                    ユーザー「<strong>{{ user.name }}</strong>」の権限を
+                                                    {% if user.isAdmin %}
+                                                        <strong class="text-danger">一般ユーザー</strong>に変更しますか?
+                                                    {% else %}
+                                                        <strong class="text-success">管理者</strong>に変更しますか?
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    キャンセル
+                                                </button>
+                                                <form method="POST"
+                                                      action="{{ path('admin_user_toggle_admin', {'id': user.id}) }}"
+                                                      style="display: inline;">
+                                                    <input type="hidden" name="_token"
+                                                           value="{{ csrf_token('toggle-admin' ~ user.id) }}">
+                                                    <button type="submit" class="btn btn-warning">
+                                                        変更する
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 削除確認モーダル -->
+                                <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">削除確認</h5>
+                                                <button type="button" class="close text-white" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="text-center">
+                                                    <h6>ユーザー「<strong>{{ user.name }}</strong>」を削除しますか？</h6>
+                                                    <p class="text-muted small">
+                                                        この操作は取り消せません。<br>
+                                                        {% if user.memos|length > 0 %}
+                                                            <span class="text-warning">
+                                                                関連する{{ user.memos|length }}件のメモも影響を受ける可能性があります。
+                                                            </span>
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    キャンセル
+                                                </button>
+                                                <form method="POST"
+                                                      action="{{ path('admin_user_delete', {'id': user.id}) }}"
+                                                      style="display: inline;">
+                                                    <input type="hidden" name="_token"
+                                                           value="{{ csrf_token('delete-user' ~ user.id) }}">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        削除する
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ページネーション -->
+                {% if pagination.getTotalItemCount > 20 %}
+                    <div class="d-flex justify-content-center mt-4">
+                        {{ knp_pagination_render(pagination) }}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info text-center">
+                    <h5>ユーザーがまだいません</h5>
+                    <p class="mb-0">登録されているユーザーがいません。</p>
+                </div>
+            {% endif %}
+
+            <!-- ナビゲーション -->
+            <div class="text-center mt-5 pt-4 border-top">
+                <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-primary mr-2">
+                    ダッシュボードに戻る
+                </a>
+                <a href="{{ path('homepage') }}" class="btn btn-outline-secondary">
+                    ホームに戻る
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

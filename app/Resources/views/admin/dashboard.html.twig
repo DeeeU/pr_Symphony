@@ -1,0 +1,188 @@
+{% extends 'base.html.twig' %}
+{% block title %}管理画面 - ダッシュボード{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .stats-card {
+            transition: transform 0.2s ease-in-out;
+            border-left: 4px solid transparent;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        .stats-icon {
+            font-size: 3rem;
+            opacity: 0.2;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        .recent-activity {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4">
+        <!-- 管理画面ヘッダー -->
+        <div class="admin-header">
+            <div class="container">
+                <h1 class="mb-2">管理画面</h1>
+                <p class="mb-0">システムの統計情報と最近のアクティビティ</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- フラッシュメッセージ -->
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+
+            <!-- 統計カード -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card stats-card border-primary" style="border-left-color: #007bff !important;">
+                        <div class="card-body position-relative">
+                            <h6 class="card-subtitle mb-2 text-muted">総ユーザー数</h6>
+                            <h2 class="card-title mb-0">{{ userCount }}</h2>
+                            <div class="stats-icon text-primary">👥</div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ path('admin_users') }}" class="btn btn-sm btn-outline-primary">
+                                ユーザー管理 →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card stats-card border-success" style="border-left-color: #28a745 !important;">
+                        <div class="card-body position-relative">
+                            <h6 class="card-subtitle mb-2 text-muted">総メモ数</h6>
+                            <h2 class="card-title mb-0">{{ memoCount }}</h2>
+                            <div class="stats-icon text-success">📝</div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ path('memo_index') }}" class="btn btn-sm btn-outline-success">
+                                メモ一覧 →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card stats-card border-warning" style="border-left-color: #ffc107 !important;">
+                        <div class="card-body position-relative">
+                            <h6 class="card-subtitle mb-2 text-muted">総カテゴリ数</h6>
+                            <h2 class="card-title mb-0">{{ categoryCount }}</h2>
+                            <div class="stats-icon text-warning">📁</div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ path('category_index') }}" class="btn btn-sm btn-outline-warning">
+                                カテゴリ一覧 →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近のアクティビティ -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">最近登録されたユーザー</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recentUsers|length > 0 %}
+                                <div class="list-group list-group-flush">
+                                    {% for user in recentUsers %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ user.name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ user.email }}</small>
+                                                {% if user.isAdmin %}
+                                                    <span class="badge badge-danger ml-2">管理者</span>
+                                                {% endif %}
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ user.createdAt|date('Y/m/d H:i') }}
+                                            </small>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center mb-0">ユーザーがまだいません</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">最近作成されたメモ</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recentMemos|length > 0 %}
+                                <div class="list-group list-group-flush">
+                                    {% for memo in recentMemos %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>{{ memo.title|length > 30 ? memo.title|slice(0, 30) ~ '...' : memo.title }}</strong>
+                                                <small class="text-muted">
+                                                    {{ memo.createdAt|date('Y/m/d H:i') }}
+                                                </small>
+                                            </div>
+                                            {% if memo.author %}
+                                                <small class="text-muted">
+                                                    作成者: {{ memo.author.name }}
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center mb-0">メモがまだありません</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ナビゲーション -->
+            <div class="text-center mt-4 pt-4 border-top">
+                <a href="{{ path('homepage') }}" class="btn btn-outline-secondary">
+                    ホームに戻る
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
